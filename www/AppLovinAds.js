@@ -1,8 +1,7 @@
 'use strict';
 
 
-var argscheck = require('cordova/argscheck'),
-    exec = require('cordova/exec');
+var exec = require('cordova/exec');
 
 var applovinExport = {};
 
@@ -157,7 +156,7 @@ applovinExport.setNativeAdClickArea = function (adId, x, y, w, h, successCallbac
 
 applovinExport.trackEvent = function trackEvent(event, params, successCallback, failureCallback) {
     exec(successCallback, failureCallback, PLUGIN, 'trackEvent', [event, params]);
-}
+};
 
 
 module.exports = applovinExport;

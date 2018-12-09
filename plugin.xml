@@ -50,7 +50,6 @@
 
 
         <source-file src="src/android/AppLovinPlugin.java" target-dir="src/me/mingz/cordova/plugin/applovin"/>
-        <source-file src="src/android/Actions.java" target-dir="src/me/mingz/cordova/plugin/applovin"/>
 
     </platform>
 
