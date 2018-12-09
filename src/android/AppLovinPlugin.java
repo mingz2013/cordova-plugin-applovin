@@ -15,10 +15,12 @@ import org.json.JSONException;
 import android.util.Log;
 
 import java.util.Map;
+import java.util.HashMap;
 
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
 import com.applovin.adview.AppLovinAdViewEventListener;
+import com.applovin.adview.AppLovinIncentivizedInterstitial;
 import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinErrorCodes;
@@ -28,7 +30,10 @@ import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdRewardListener;
 import com.applovin.sdk.AppLovinAdVideoPlaybackListener;
-import com.applovin.adview.AppLovinIncentivizedInterstitial;
+import com.applovin.sdk.AppLovinEventService;
+import com.applovin.sdk.AppLovinEventParameters;
+import com.applovin.sdk.AppLovinEventTypes;
+
 
 public class AppLovinPlugin extends CordovaPlugin {
     private static final String TAG = "AppLovinPlugin";
@@ -49,7 +54,7 @@ public class AppLovinPlugin extends CordovaPlugin {
     public static final String ACTION_CREATE_NATIVE_AD = "createNativeAd";
     public static final String ACTION_REMOVE_NATIVE_AD = "removeNativeAd";
     public static final String ACTION_SET_NATIVE_AD_CLICK_AREA = "setNativeAdClickArea";
-    //    static final String TRACK_EVENT = "trackEvent";
+    public static final String ACTION_TRACK_EVENT = "trackEvent";
 
 
     public static final String ADTYPE_BANNER = "banner";
@@ -138,12 +143,6 @@ public class AppLovinPlugin extends CordovaPlugin {
         PluginResult result = null;
 
 
-//        if (Actions.TRACK_EVENT.equals(action)) {
-//            String event = inputs.getString(0);
-//            JSONArray parameters = inputs.optJSONArray(1);
-//            result = trackEvent(event, parameters, callbackContext);
-//
-//        }else
         if (ACTION_SET_OPTIONS.equals(action)) {
 
             String event = inputs.getString(0);
@@ -226,6 +225,11 @@ public class AppLovinPlugin extends CordovaPlugin {
             String event = inputs.getString(0);
             JSONArray parameters = inputs.optJSONArray(1);
             result = setNativeAdClickArea(callbackContext);
+
+        } else if (ACTION_TRACK_EVENT.equals(action)) {
+            String event = inputs.getString(0);
+            JSONArray parameters = inputs.optJSONArray(1);
+            result = trackEvent(event, parameters, callbackContext);
 
 
         } else {
@@ -620,44 +624,44 @@ public class AppLovinPlugin extends CordovaPlugin {
         return true;
     }
 
-//    private PluginResult trackEvent(final String event, final JSONArray data, CallbackContext callbackContext) {
-//        final AppLovinEventService eventService = AppLovinSdk.getInstance(cordova.getActivity()).getEventService();
-//
-//        Map<String, String> parameters = new HashMap<String, String>();
-//        String eventName;
-//        if (event.equalsIgnoreCase("USER_COMPLETED_LEVEL")) {
-//            eventName = AppLovinEventTypes.USER_COMPLETED_LEVEL;
-//            parameters.put(AppLovinEventParameters.COMPLETED_LEVEL_IDENTIFIER, data.optString(0, "0"));
-//
-//        } else if (event.equalsIgnoreCase("USER_COMPLETED_IN_APP_PURCHASE")) {
-//            eventName = AppLovinEventTypes.USER_COMPLETED_IN_APP_PURCHASE;
-//            parameters.put(AppLovinEventParameters.REVENUE_AMOUNT, data.optString(0, "0"));
-//            parameters.put(AppLovinEventParameters.REVENUE_CURRENCY, data.optString(1, "USD"));
-//            parameters.put(AppLovinEventParameters.IN_APP_PURCHASE_TRANSACTION_IDENTIFIER, data.optString(2, ""));
-//
-//        } else if (event.equalsIgnoreCase("USER_SPENT_VIRTUAL_CURRENCY")) {
-//            eventName = AppLovinEventTypes.USER_SPENT_VIRTUAL_CURRENCY;
-//            parameters.put(AppLovinEventParameters.VIRTUAL_CURRENCY_AMOUNT, data.optString(0, "0"));
-//            parameters.put(AppLovinEventParameters.VIRTUAL_CURRENCY_NAME, data.optString(1, ""));
-//
-//        } else if (event.equalsIgnoreCase("USER_COMPLETED_TUTORIAL")) {
-//            eventName = AppLovinEventTypes.USER_COMPLETED_TUTORIAL;
-//
-//        } else if (event.equalsIgnoreCase("USER_VIEWED_PRODUCT")) {
-//            eventName = AppLovinEventTypes.USER_VIEWED_PRODUCT;
-//            parameters.put(AppLovinEventParameters.PRODUCT_IDENTIFIER, data.optString(0, ""));
-//
-//        } else if (event.equalsIgnoreCase("USER_LOGGED_IN")) {
-//            eventName = AppLovinEventTypes.USER_LOGGED_IN;
-//
-//        } else {
-//            return null;
-//        }
-//
-//        eventService.trackEvent(eventName, parameters);
-//
-//        return null;
-//    }
+    private PluginResult trackEvent(final String event, final JSONArray data, CallbackContext callbackContext) {
+        final AppLovinEventService eventService = AppLovinSdk.getInstance(cordova.getActivity()).getEventService();
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        String eventName;
+        if (event.equalsIgnoreCase("USER_COMPLETED_LEVEL")) {
+            eventName = AppLovinEventTypes.USER_COMPLETED_LEVEL;
+            parameters.put(AppLovinEventParameters.COMPLETED_LEVEL_IDENTIFIER, data.optString(0, "0"));
+
+        } else if (event.equalsIgnoreCase("USER_COMPLETED_IN_APP_PURCHASE")) {
+            eventName = AppLovinEventTypes.USER_COMPLETED_IN_APP_PURCHASE;
+            parameters.put(AppLovinEventParameters.REVENUE_AMOUNT, data.optString(0, "0"));
+            parameters.put(AppLovinEventParameters.REVENUE_CURRENCY, data.optString(1, "USD"));
+            parameters.put(AppLovinEventParameters.IN_APP_PURCHASE_TRANSACTION_IDENTIFIER, data.optString(2, ""));
+
+        } else if (event.equalsIgnoreCase("USER_SPENT_VIRTUAL_CURRENCY")) {
+            eventName = AppLovinEventTypes.USER_SPENT_VIRTUAL_CURRENCY;
+            parameters.put(AppLovinEventParameters.VIRTUAL_CURRENCY_AMOUNT, data.optString(0, "0"));
+            parameters.put(AppLovinEventParameters.VIRTUAL_CURRENCY_NAME, data.optString(1, ""));
+
+        } else if (event.equalsIgnoreCase("USER_COMPLETED_TUTORIAL")) {
+            eventName = AppLovinEventTypes.USER_COMPLETED_TUTORIAL;
+
+        } else if (event.equalsIgnoreCase("USER_VIEWED_PRODUCT")) {
+            eventName = AppLovinEventTypes.USER_VIEWED_PRODUCT;
+            parameters.put(AppLovinEventParameters.PRODUCT_IDENTIFIER, data.optString(0, ""));
+
+        } else if (event.equalsIgnoreCase("USER_LOGGED_IN")) {
+            eventName = AppLovinEventTypes.USER_LOGGED_IN;
+
+        } else {
+            return null;
+        }
+
+        eventService.trackEvent(eventName, parameters);
+
+        return null;
+    }
 
     private void fireEvent(String eventName, JSONObject jsonObj) {
         String data = "";

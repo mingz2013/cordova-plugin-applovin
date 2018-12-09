@@ -155,6 +155,10 @@ applovinExport.setNativeAdClickArea = function (adId, x, y, w, h, successCallbac
     cordova.exec(successCallback, failureCallback, PLUGIN, 'setNativeAdClickArea', [adId, x, y, w, h]);
 };
 
+applovinExport.trackEvent = function trackEvent(event, params, successCallback, failureCallback) {
+    exec(successCallback, failureCallback, PLUGIN, 'trackEvent', [event, params]);
+}
+
 
 module.exports = applovinExport;
 
