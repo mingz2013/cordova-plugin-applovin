@@ -28,4 +28,4 @@ cordova plugin applovin
 
 
 
-**in coding... unusefull**
+**in coding... unuseful**

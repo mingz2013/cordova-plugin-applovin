@@ -10,8 +10,8 @@
     <issue>https://github.com/mingz2013/cordova-plugin-applovin/issues</issue>
 
 
-    <js-module src="www/applovin.js" name="applovin">
-        <clobbers target="window.AppLovin"/>
+    <js-module src="www/AppLovinAds.js" name="AppLovinAds">
+        <clobbers target="window.AppLovinAds"/>
     </js-module>
 
     <preference name="SDK_KEY"/>

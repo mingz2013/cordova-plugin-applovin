@@ -86,7 +86,7 @@
             var x = offset.left - $(window).scrollLeft();
             var w = $("#nativead").width();
             var h = $("#nativead").height();
-            if (FacebookAds) FacebookAds.setNativeAdClickArea(nativeId, x, y, w, h);
+            if (ApplovinAds) ApplovinAds.setNativeAdClickArea(nativeId, x, y, w, h);
         }
     }
 
@@ -145,7 +145,7 @@
 
     function createSelectedBanner() {
         var overlap = document.getElementById('overlap').checked;
-        FacebookAds.createBanner({
+        ApplovinAds.createBanner({
             adId: adid.banner,
             overlap: overlap,
             adSize: getSelectedAdSize(),
@@ -154,18 +154,18 @@
     }
 
     function showBannerAtSelectedPosition() {
-        if (FacebookAds) FacebookAds.showBanner(getSelectedPosition());
+        if (ApplovinAds) ApplovinAds.showBanner(getSelectedPosition());
     }
 
     function showBannerAtGivenXY() {
         var x = document.getElementById('x').value;
         var y = document.getElementById('y').value;
-        if (FacebookAds) FacebookAds.showBannerAtXY(x, y);
+        if (ApplovinAds) ApplovinAds.showBannerAtXY(x, y);
     }
 
     function prepareInterstitial() {
         var autoshow = document.getElementById('autoshow').checked;
-        if (FacebookAds) FacebookAds.prepareInterstitial({
+        if (ApplovinAds) ApplovinAds.prepareInterstitial({
             adId: adid.interstitial,
             autoShow: autoshow
         });
@@ -174,7 +174,7 @@
     function prepareRewardVideo() {
         console.log("prepareRewardVideo....");
         var autoshow = document.getElementById('autoshow_rewardVideo').checked;
-        if (FacebookAds) FacebookAds.prepareRewardVideoAd({
+        if (ApplovinAds) ApplovinAds.prepareRewardVideoAd({
             adId: adid.rewardVideo,
             autoShow: autoshow
         });
@@ -187,22 +187,22 @@
     }
 
     function createNativeAd() {
-        if (FacebookAds) FacebookAds.createNativeAd(adid.nativeAd);
+        if (ApplovinAds) ApplovinAds.createNativeAd(adid.nativeAd);
     }
 
     function removeNativeAd() {
         $('#nativead').html("<br/>");
-        if (FacebookAds) FacebookAds.removeNativeAd(nativeId);
+        if (ApplovinAds) ApplovinAds.removeNativeAd(nativeId);
     }
 </script>
 <div id="fullpage">
-    <p>Demo for FacebookAds Plugin</p>
+    <p>Demo for ApplovinAds Plugin</p>
     Banner<br/> Standard: <select id="adSize">
     <option value='SMART_BANNER'>SMART_BANNER</option>
     <option value='BANNER'>BANNER</option>
 </select><br/> <input type='checkbox' id='overlap'/>overlap
     <button onclick="createSelectedBanner();">create</button>
-    <button onclick="FacebookAds.removeBanner();">remove</button>
+    <button onclick="ApplovinAds.removeBanner();">remove</button>
     <select id="adPosition">
         <option value='1'>Top Left</option>
         <option value='2'>Top Center</option>
@@ -215,7 +215,7 @@
         <option value='9'>Bottom Right</option>
     </select>
     <button onclick="showBannerAtSelectedPosition();">show</button>
-    <button onclick="FacebookAds.hideBanner();">hide</button>
+    <button onclick="Applovin.hideBanner();">hide</button>
     <br/> (<input id='x' type='text' size=3/>,<input id='y'
                                                      type='text' size=3>)
     <button onclick="showBannerAtGivenXY();">show At XY</button>
@@ -225,7 +225,7 @@
     <p>Interstitial</p>
     <input type='checkbox' id='autoshow' checked/>auto show when ready<br/>
     <button onclick="prepareInterstitial();">Prepare</button>
-    <button onclick="FacebookAds.showInterstitial();">Show</button>
+    <button onclick="ApplovinAds.showInterstitial();">Show</button>
     <div id='sizeinfo'></div>
 
     <hr/>
@@ -233,7 +233,7 @@
     <p>rewardVideo</p>
     <input type='checkbox' id='autoshow_rewardVideo' checked/>auto show when ready<br/>
     <button onclick="prepareRewardVideo();">Prepare</button>
-    <button onclick="FacebookAds.showRewardVideoAd();">Show</button>
+    <button onclick="ApplovinAds.showRewardVideoAd();">Show</button>
     <div id='sizeinfo'></div>
 
     <hr/>

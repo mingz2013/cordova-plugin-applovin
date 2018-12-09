@@ -119,7 +119,7 @@ applovinExport.showInterstitial = function (successCallback, failureCallback) {
 };
 
 applovinExport.prepareRewardVideoAd = function (args, successCallback, failureCallback) {
-    console.log("fbanExport.prepareRewardVideoAd....");
+    console.log("applovinExport.prepareRewardVideoAd....");
     var options = {};
     if (typeof args === 'object') {
         for (var k in args) {
