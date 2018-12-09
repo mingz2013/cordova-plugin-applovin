@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-applovin" version="0.0.1">
+    <name>Applovin</name>
+    <description>Cordova Applovin Plugin</description>
+    <author>Mingz</author>
+    <license>Apache 2.0</license>
+    <keywords>cordova,applovin</keywords>
+    <repo>https://github.com/mingz2013/cordova-plugin-applovin</repo>
+    <issue>https://github.com/mingz2013/cordova-plugin-applovin/issues</issue>
+
+
+    <js-module src="www/applovin.js" name="applovin">
+        <clobbers target="window.AppLovin"/>
+    </js-module>
+
+    <preference name="SDK_KEY"/>
+
+    <!-- android -->
+    <platform name="android">
+        <framework src="src/android/applovin-plugin.gradle" custom="true" type="gradleReference"/>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name="com.applovin.adview.AppLovinInterstitialActivity"
+                      android:configChanges="orientation|screenSize"/>
+            <activity android:name="com.applovin.adview.AppLovinConfirmationActivity"
+                      android:configChanges="orientation|screenSize"/>
+
+            <meta-data
+                    android:name="applovin.sdk.key"
+                    android:value="$SDK_KEY"
+            />
+        </config-file>
+
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET"/>
+
+            <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" /> -->
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+        </config-file>
+
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="AppLovinPlugin">
+                <param name="android-package" value="me.mingz.cordova.plugin.applovin.AppLovinPlugin"/>
+                <param name="onload" value="true"/>
+            </feature>
+        </config-file>
+
+
+        <source-file src="src/android/AppLovinPlugin.java" target-dir="src/me/mingz/cordova/plugin/applovin"/>
+        <source-file src="src/android/Actions.java" target-dir="src/me/mingz/cordova/plugin/applovin"/>
+
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="AppLovinPlugin">
+                <param name="ios-package" value="AppLovinPlugin"/>
+                <param name="onload" value="true"/>
+            </feature>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="AppLovinSdkKey">
+            <string>$SDK_KEY</string>
+        </config-file>
+
+        <header-file src="src/ios/AppLovinPlugin.h"/>
+        <source-file src="src/ios/AppLovinPlugin.m"/>
+
+
+        <framework src="AppLovinSDK" type="podspec"/>
+        <!--<framework src="AppLovinSDK.framework" custom="true" />-->
+    </platform>
+
+</plugin>
