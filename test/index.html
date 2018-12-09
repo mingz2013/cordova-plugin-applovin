@@ -47,26 +47,27 @@
         }
     }
 
-    var ad_units = {
-        ios: {
-            banner: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151452430337",
-            interstitial: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151589096990",
-            rewardVideo: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151589096990",
-            nativeAd: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151705763645"
-        },
-        android: {
-            banner: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_570432796711838",
-            interstitial: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_569910350097416",
-            rewardVideo: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_570516513370133",
-            nativeAd: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_569904960097955"
-        }
+    //
+    //    var ad_units = {
+    //        ios: {
+    //            banner: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151452430337",
+    //            interstitial: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151589096990",
+    //            rewardVideo: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151589096990",
+    //            nativeAd: "VID_HD_16_9_46S_APP_INSTALL#726719434140206_777151705763645"
+    //        },
+    //        android: {
+    //            banner: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_570432796711838",
+    //            interstitial: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_569910350097416",
+    //            rewardVideo: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_570516513370133",
+    //            nativeAd: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_569904960097955"
+    //        }
     };
 
     // select the right Ad Id according to platform
-    var adid = (/(android)/i.test(navigator.userAgent)) ? ad_units.android : ad_units.ios;
+    //    var adid = (/(android)/i.test(navigator.userAgent)) ? ad_units.android : ad_units.ios;
 
     function initApp() {
-        if (!AppLovin) {
+        if (!ApplovinAds) {
             alert('AppLovin plugin not ready');
             return;
         }
@@ -240,10 +241,10 @@
 
     <hr/>
 
-    <p>Native Ad</p>
-    <div id='nativead' style="border:1pt solid red;width:300;"><br/></div>
-    <button onclick="createNativeAd();">Create</button>
-    <button onclick="removeNativeAd();">Remove</button>
+    <!--<p>Native Ad</p>-->
+    <!--<div id='nativead' style="border:1pt solid red;width:300;"><br/></div>-->
+    <!--<button onclick="createNativeAd();">Create</button>-->
+    <!--<button onclick="removeNativeAd();">Remove</button>-->
 </div>
 </body>
 </html>

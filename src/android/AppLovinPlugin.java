@@ -39,36 +39,36 @@ public class AppLovinPlugin extends CordovaPlugin {
     private static final String TAG = "AppLovinPlugin";
 
 
-    public static final String ACTION_GET_AD_SETTINGS = "getAdSettings";
-    public static final String ACTION_SET_OPTIONS = "setOptions";
-    public static final String ACTION_CREATE_BANNER = "createBanner";
-    public static final String ACTION_REMOVE_BANNER = "removeBanner";
-    public static final String ACTION_HIDE_BANNER = "hideBanner";
-    public static final String ACTION_SHOW_BANNER = "showBanner";
-    public static final String ACTION_SHOW_BANNER_AT_XY = "showBannerAtXY";
-    public static final String ACTION_PREPARE_INTERSTITIAL = "prepareInterstitial";
-    public static final String ACTION_SHOW_INTERSTITIAL = "showInterstitial";
-    public static final String ACTION_IS_INTERSTITIAL_READY = "isInterstitialReady";
-    public static final String ACTION_PREPARE_REWARD_VIDEO_AD = "prepareRewardVideoAd";
-    public static final String ACTION_SHOW_REWARD_VIDEO_AD = "showRewardVideoAd";
-    public static final String ACTION_CREATE_NATIVE_AD = "createNativeAd";
-    public static final String ACTION_REMOVE_NATIVE_AD = "removeNativeAd";
-    public static final String ACTION_SET_NATIVE_AD_CLICK_AREA = "setNativeAdClickArea";
-    public static final String ACTION_TRACK_EVENT = "trackEvent";
+    private static final String ACTION_GET_AD_SETTINGS = "getAdSettings";
+    private static final String ACTION_SET_OPTIONS = "setOptions";
+    private static final String ACTION_CREATE_BANNER = "createBanner";
+    private static final String ACTION_REMOVE_BANNER = "removeBanner";
+    private static final String ACTION_HIDE_BANNER = "hideBanner";
+    private static final String ACTION_SHOW_BANNER = "showBanner";
+    private static final String ACTION_SHOW_BANNER_AT_XY = "showBannerAtXY";
+    private static final String ACTION_PREPARE_INTERSTITIAL = "prepareInterstitial";
+    private static final String ACTION_SHOW_INTERSTITIAL = "showInterstitial";
+    private static final String ACTION_IS_INTERSTITIAL_READY = "isInterstitialReady";
+    private static final String ACTION_PREPARE_REWARD_VIDEO_AD = "prepareRewardVideoAd";
+    private static final String ACTION_SHOW_REWARD_VIDEO_AD = "showRewardVideoAd";
+    private static final String ACTION_CREATE_NATIVE_AD = "createNativeAd";
+    private static final String ACTION_REMOVE_NATIVE_AD = "removeNativeAd";
+    private static final String ACTION_SET_NATIVE_AD_CLICK_AREA = "setNativeAdClickArea";
+    private static final String ACTION_TRACK_EVENT = "trackEvent";
 
 
-    public static final String ADTYPE_BANNER = "banner";
-    public static final String ADTYPE_INTERSTITIAL = "interstitial";
-    public static final String ADTYPE_NATIVE = "native";
-    public static final String ADTYPE_REWARDVIDEO = "rewardvideo";
+    private static final String ADTYPE_BANNER = "banner";
+    private static final String ADTYPE_INTERSTITIAL = "interstitial";
+    private static final String ADTYPE_NATIVE = "native";
+    private static final String ADTYPE_REWARDVIDEO = "rewardvideo";
 
-    public static final String EVENT_AD_LOADED = "onAdLoaded";
-    public static final String EVENT_AD_FAILLOAD = "onAdFailLoad";
-    public static final String EVENT_AD_PRESENT = "onAdPresent";
-    public static final String EVENT_AD_LEAVEAPP = "onAdLeaveApp";
-    public static final String EVENT_AD_DISMISS = "onAdDismiss";
-    public static final String EVENT_AD_WILLPRESENT = "onAdWillPresent";
-    public static final String EVENT_AD_WILLDISMISS = "onAdWillDismiss";
+    private static final String EVENT_AD_LOADED = "onAdLoaded";
+    private static final String EVENT_AD_FAILLOAD = "onAdFailLoad";
+    private static final String EVENT_AD_PRESENT = "onAdPresent";
+    private static final String EVENT_AD_LEAVEAPP = "onAdLeaveApp";
+    private static final String EVENT_AD_DISMISS = "onAdDismiss";
+    private static final String EVENT_AD_WILLPRESENT = "onAdWillPresent";
+    private static final String EVENT_AD_WILLDISMISS = "onAdWillDismiss";
 
     private AppLovinIncentivizedInterstitial interstitialAds = null;
     private AppLovinIncentivizedInterstitial rewardVideoAds = null;
@@ -151,26 +151,26 @@ public class AppLovinPlugin extends CordovaPlugin {
 
         } else if (ACTION_CREATE_BANNER.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = createBanner(callbackContext);
 
         } else if (ACTION_REMOVE_BANNER.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = removeBanner(callbackContext);
 
         } else if (ACTION_HIDE_BANNER.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = hideBanner(callbackContext);
 
         } else if (ACTION_SHOW_BANNER.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = showBanner(callbackContext);
 
         } else if (ACTION_SHOW_BANNER_AT_XY.equals(action)) {
@@ -181,8 +181,8 @@ public class AppLovinPlugin extends CordovaPlugin {
 
         } else if (ACTION_PREPARE_INTERSTITIAL.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = prepareInterstitial(callbackContext);
 
         } else if (ACTION_IS_INTERSTITIAL_READY.equals(action)) {
@@ -192,38 +192,38 @@ public class AppLovinPlugin extends CordovaPlugin {
 
         } else if (ACTION_SHOW_INTERSTITIAL.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = showInterstitial(callbackContext);
 
         } else if (ACTION_PREPARE_REWARD_VIDEO_AD.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = prepareRewardVideoAd(callbackContext);
 
         } else if (ACTION_SHOW_REWARD_VIDEO_AD.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = showRewardVideoAd(callbackContext);
 
         } else if (ACTION_CREATE_NATIVE_AD.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = createNativeAd(callbackContext);
 
         } else if (ACTION_REMOVE_NATIVE_AD.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = removeNativeAd(callbackContext);
 
         } else if (ACTION_SET_NATIVE_AD_CLICK_AREA.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
             result = setNativeAdClickArea(callbackContext);
 
         } else if (ACTION_TRACK_EVENT.equals(action)) {
@@ -531,7 +531,7 @@ public class AppLovinPlugin extends CordovaPlugin {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                fireEvent("applovin.load", data);
+                fireEvent(EVENT_AD_LOADED, data.toString());
             }
 
             @Override
@@ -544,7 +544,7 @@ public class AppLovinPlugin extends CordovaPlugin {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                fireEvent("applovin.load_error", data);
+                fireAdEvent("applovin.load_error", data.toString());
             }
         });
     }
@@ -560,7 +560,7 @@ public class AppLovinPlugin extends CordovaPlugin {
                     @Override
                     public void userDeclinedToViewAd(final AppLovinAd appLovinAd) {
                         log("User declined to view rewarded video");
-                        fireEvent("applovin.close", null);
+                        fireAdEvent("applovin.close", null);
                     }
 
                     @Override
@@ -577,7 +577,7 @@ public class AppLovinPlugin extends CordovaPlugin {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        fireEvent("applovin.reward", data);
+                        fireEvent("applovin.reward", data.toString());
                     }
 
                     @Override
@@ -604,19 +604,19 @@ public class AppLovinPlugin extends CordovaPlugin {
                     @Override
                     public void videoPlaybackEnded(AppLovinAd ad, double percentViewed, boolean fullyWatched) {
                         if (fullyWatched) {
-                            fireEvent("applovin.completed", null);
+                            fireAdEvent("applovin.completed", null);
                         }
                     }
                 },
                 new AppLovinAdDisplayListener() {
                     @Override
                     public void adDisplayed(AppLovinAd appLovinAd) {
-                        fireEvent("applovin.start", null);
+                        fireAdEvent("applovin.start", null);
                     }
 
                     @Override
                     public void adHidden(AppLovinAd appLovinAd) {
-                        fireEvent("applovin.close", null);
+                        fireAdEvent("applovin.close", null);
                     }
                 }
         );
@@ -663,22 +663,34 @@ public class AppLovinPlugin extends CordovaPlugin {
         return null;
     }
 
-    private void fireEvent(String eventName, JSONObject jsonObj) {
-        String data = "";
-        if (jsonObj != null) {
-            data = jsonObj.toString();
-        }
-//
+
+
+    protected String __getProductShortName() {
+        return "AppLoginPlugin";
+    }
+
+    protected void fireAdEvent(String event, String adType) {
+        String obj = this.__getProductShortName();
+        String json = String.format("{'adNetwork':'%s','adType':'%s','adEvent':'%s'}", obj, adType, event);
+        this.fireEvent(event, json);
+    }
+
+    private void fireEvent(String eventName, String json) {
+//        String data = "";
+//        if (jsonObj != null) {
+//            data = jsonObj.toString();
+//        }
+
         StringBuilder js = new StringBuilder();
         js.append("javascript:cordova.fireDocumentEvent('");
         js.append(eventName);
         js.append("'");
-        if (data != null && !"".equals(data)) {
+        if (json != null && !"".equals(json)) {
             js.append(",");
-            js.append(data);
+            js.append(json);
         }
         js.append(");");
-//
+
         final String code = js.toString();
 
         cordova.getActivity().runOnUiThread(new Runnable() {
