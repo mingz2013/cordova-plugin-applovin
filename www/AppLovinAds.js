@@ -142,17 +142,17 @@ applovinExport.showRewardVideoAd = function (successCallback, failureCallback) {
     cordova.exec(successCallback, failureCallback, PLUGIN, 'showRewardVideoAd', []);
 };
 
-applovinExport.createNativeAd = function (successCallback, failureCallback) {
-    cordova.exec(successCallback, failureCallback, PLUGIN, 'createNativeAd', []);
-};
-
-applovinExport.removeNativeAd = function (successCallback, failureCallback) {
-    cordova.exec(successCallback, failureCallback, PLUGIN, 'removeNativeAd', []);
-};
-
-applovinExport.setNativeAdClickArea = function (x, y, w, h, successCallback, failureCallback) {
-    cordova.exec(successCallback, failureCallback, PLUGIN, 'setNativeAdClickArea', [x, y, w, h]);
-};
+//applovinExport.createNativeAd = function (successCallback, failureCallback) {
+//    cordova.exec(successCallback, failureCallback, PLUGIN, 'createNativeAd', []);
+//};
+//
+//applovinExport.removeNativeAd = function (successCallback, failureCallback) {
+//    cordova.exec(successCallback, failureCallback, PLUGIN, 'removeNativeAd', []);
+//};
+//
+//applovinExport.setNativeAdClickArea = function (x, y, w, h, successCallback, failureCallback) {
+//    cordova.exec(successCallback, failureCallback, PLUGIN, 'setNativeAdClickArea', [x, y, w, h]);
+//};
 
 applovinExport.trackEvent = function trackEvent(event, params, successCallback, failureCallback) {
     exec(successCallback, failureCallback, PLUGIN, 'trackEvent', [event, params]);

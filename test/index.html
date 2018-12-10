@@ -67,7 +67,7 @@
     //    var adid = (/(android)/i.test(navigator.userAgent)) ? ad_units.android : ad_units.ios;
 
     function initApp() {
-        if (!ApplovinAds) {
+        if (!AppLovinAds) {
             alert('AppLovin plugin not ready');
             return;
         }
@@ -87,7 +87,7 @@
             var x = offset.left - $(window).scrollLeft();
             var w = $("#nativead").width();
             var h = $("#nativead").height();
-            if (ApplovinAds) ApplovinAds.setNativeAdClickArea(nativeId, x, y, w, h);
+            if (AppLovinAds) AppLovinAds.setNativeAdClickArea(nativeId, x, y, w, h);
         }
     }
 
@@ -146,7 +146,7 @@
 
     function createSelectedBanner() {
         var overlap = document.getElementById('overlap').checked;
-        ApplovinAds.createBanner({
+        AppLovinAds.createBanner({
             adId: adid.banner,
             overlap: overlap,
             adSize: getSelectedAdSize(),
@@ -155,18 +155,18 @@
     }
 
     function showBannerAtSelectedPosition() {
-        if (ApplovinAds) ApplovinAds.showBanner(getSelectedPosition());
+        if (AppLovinAds) AppLovinAds.showBanner(getSelectedPosition());
     }
 
     function showBannerAtGivenXY() {
         var x = document.getElementById('x').value;
         var y = document.getElementById('y').value;
-        if (ApplovinAds) ApplovinAds.showBannerAtXY(x, y);
+        if (AppLovinAds) AppLovinAds.showBannerAtXY(x, y);
     }
 
     function prepareInterstitial() {
         var autoshow = document.getElementById('autoshow').checked;
-        if (ApplovinAds) ApplovinAds.prepareInterstitial({
+        if (AppLovinAds) AppLovinAds.prepareInterstitial({
             adId: adid.interstitial,
             autoShow: autoshow
         });
@@ -175,7 +175,7 @@
     function prepareRewardVideo() {
         console.log("prepareRewardVideo....");
         var autoshow = document.getElementById('autoshow_rewardVideo').checked;
-        if (ApplovinAds) ApplovinAds.prepareRewardVideoAd({
+        if (AppLovinAds) AppLovinAds.prepareRewardVideoAd({
             adId: adid.rewardVideo,
             autoShow: autoshow
         });
@@ -188,22 +188,22 @@
     }
 
     function createNativeAd() {
-        if (ApplovinAds) ApplovinAds.createNativeAd(adid.nativeAd);
+        if (AppLovinAds) AppLovinAds.createNativeAd(adid.nativeAd);
     }
 
     function removeNativeAd() {
         $('#nativead').html("<br/>");
-        if (ApplovinAds) ApplovinAds.removeNativeAd(nativeId);
+        if (AppLovinAds) AppLovinAds.removeNativeAd(nativeId);
     }
 </script>
 <div id="fullpage">
-    <p>Demo for ApplovinAds Plugin</p>
+    <p>Demo for AppLovinAds Plugin</p>
     Banner<br/> Standard: <select id="adSize">
     <option value='SMART_BANNER'>SMART_BANNER</option>
     <option value='BANNER'>BANNER</option>
 </select><br/> <input type='checkbox' id='overlap'/>overlap
     <button onclick="createSelectedBanner();">create</button>
-    <button onclick="ApplovinAds.removeBanner();">remove</button>
+    <button onclick="AppLovinAds.removeBanner();">remove</button>
     <select id="adPosition">
         <option value='1'>Top Left</option>
         <option value='2'>Top Center</option>
@@ -216,7 +216,7 @@
         <option value='9'>Bottom Right</option>
     </select>
     <button onclick="showBannerAtSelectedPosition();">show</button>
-    <button onclick="ApplovinAds.hideBanner();">hide</button>
+    <button onclick="AppLovinAds.hideBanner();">hide</button>
     <br/> (<input id='x' type='text' size=3/>,<input id='y'
                                                      type='text' size=3>)
     <button onclick="showBannerAtGivenXY();">show At XY</button>
@@ -226,7 +226,7 @@
     <p>Interstitial</p>
     <input type='checkbox' id='autoshow' checked/>auto show when ready<br/>
     <button onclick="prepareInterstitial();">Prepare</button>
-    <button onclick="ApplovinAds.showInterstitial();">Show</button>
+    <button onclick="AppLovinAds.showInterstitial();">Show</button>
     <div id='sizeinfo'></div>
 
     <hr/>
@@ -234,7 +234,7 @@
     <p>rewardVideo</p>
     <input type='checkbox' id='autoshow_rewardVideo' checked/>auto show when ready<br/>
     <button onclick="prepareRewardVideo();">Prepare</button>
-    <button onclick="ApplovinAds.showRewardVideoAd();">Show</button>
+    <button onclick="AppLovinAds.showRewardVideoAd();">Show</button>
     <div id='sizeinfo'></div>
 
     <hr/>

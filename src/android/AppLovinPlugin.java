@@ -21,6 +21,8 @@ import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
 import com.applovin.adview.AppLovinAdViewEventListener;
 import com.applovin.adview.AppLovinIncentivizedInterstitial;
+import com.applovin.adview.AppLovinInterstitialAd;
+import com.applovin.adview.AppLovinInterstitialAdDialog;
 import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinErrorCodes;
@@ -70,7 +72,7 @@ public class AppLovinPlugin extends CordovaPlugin {
     private static final String EVENT_AD_WILLPRESENT = "onAdWillPresent";
     private static final String EVENT_AD_WILLDISMISS = "onAdWillDismiss";
 
-    private AppLovinIncentivizedInterstitial interstitialAds = null;
+    private AppLovinInterstitialAdDialog interstitialAds = null;
     private AppLovinIncentivizedInterstitial rewardVideoAds = null;
     //    protected TextView adStatusTextView;
     private AppLovinAdView bannerView = null;
@@ -145,9 +147,10 @@ public class AppLovinPlugin extends CordovaPlugin {
 
         if (ACTION_SET_OPTIONS.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
-            result = setOptions(callbackContext);
+//            String event = inputs.getString(0);
+//            JSONArray parameters = inputs.optJSONArray(1);
+            JSONObject options = inputs.optJSONObject(0);
+            result = setOptions(options, callbackContext);
 
         } else if (ACTION_CREATE_BANNER.equals(action)) {
 
@@ -185,9 +188,9 @@ public class AppLovinPlugin extends CordovaPlugin {
 //            JSONArray parameters = inputs.optJSONArray(1);
             result = prepareInterstitial(callbackContext);
 
-        } else if (ACTION_IS_INTERSTITIAL_READY.equals(action)) {
-
-            result = isInterstitialReady(callbackContext);
+//        } else if (ACTION_IS_INTERSTITIAL_READY.equals(action)) {
+//
+//            result = isInterstitialReady(callbackContext);
 
 
         } else if (ACTION_SHOW_INTERSTITIAL.equals(action)) {
@@ -208,23 +211,23 @@ public class AppLovinPlugin extends CordovaPlugin {
 //            JSONArray parameters = inputs.optJSONArray(1);
             result = showRewardVideoAd(callbackContext);
 
-        } else if (ACTION_CREATE_NATIVE_AD.equals(action)) {
-
-//            String event = inputs.getString(0);
-//            JSONArray parameters = inputs.optJSONArray(1);
-            result = createNativeAd(callbackContext);
-
-        } else if (ACTION_REMOVE_NATIVE_AD.equals(action)) {
-
-//            String event = inputs.getString(0);
-//            JSONArray parameters = inputs.optJSONArray(1);
-            result = removeNativeAd(callbackContext);
-
-        } else if (ACTION_SET_NATIVE_AD_CLICK_AREA.equals(action)) {
-
-//            String event = inputs.getString(0);
-//            JSONArray parameters = inputs.optJSONArray(1);
-            result = setNativeAdClickArea(callbackContext);
+//        } else if (ACTION_CREATE_NATIVE_AD.equals(action)) {
+//
+////            String event = inputs.getString(0);
+////            JSONArray parameters = inputs.optJSONArray(1);
+//            result = createNativeAd(callbackContext);
+//
+//        } else if (ACTION_REMOVE_NATIVE_AD.equals(action)) {
+//
+////            String event = inputs.getString(0);
+////            JSONArray parameters = inputs.optJSONArray(1);
+//            result = removeNativeAd(callbackContext);
+//
+//        } else if (ACTION_SET_NATIVE_AD_CLICK_AREA.equals(action)) {
+//
+////            String event = inputs.getString(0);
+////            JSONArray parameters = inputs.optJSONArray(1);
+//            result = setNativeAdClickArea(callbackContext);
 
         } else if (ACTION_TRACK_EVENT.equals(action)) {
             String event = inputs.getString(0);
@@ -245,7 +248,7 @@ public class AppLovinPlugin extends CordovaPlugin {
     }
 
 
-    private PluginResult setOptions(final CallbackContext callbackContext) {
+    private PluginResult setOptions(JSONObject options, final CallbackContext callbackContext) {
         return null;
     }
 
@@ -261,12 +264,15 @@ public class AppLovinPlugin extends CordovaPlugin {
                     @Override
                     public void adReceived(final AppLovinAd ad) {
                         log("adReceived: Banner loaded");
+                        fireAdEvent(EVENT_AD_LOADED, ADTYPE_BANNER);
+//                        bannerView.loadNextAd();
                     }
 
                     @Override
                     public void failedToReceiveAd(final int errorCode) {
                         // Look at AppLovinErrorCodes.java for list of error codes
                         log("failedToReceiveAd: Banner failed to load with error code " + errorCode);
+                        fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER);
                     }
                 });
 
@@ -274,11 +280,14 @@ public class AppLovinPlugin extends CordovaPlugin {
                     @Override
                     public void adDisplayed(final AppLovinAd ad) {
                         log("adDisplayed: Banner Displayed");
+                        fireAdEvent(EVENT_AD_PRESENT, ADTYPE_BANNER);
                     }
 
                     @Override
                     public void adHidden(final AppLovinAd ad) {
+
                         log("adHidden: Banner Hidden");
+                        fireAdEvent(EVENT_AD_DISMISS, ADTYPE_BANNER);
                     }
                 });
 
@@ -286,6 +295,7 @@ public class AppLovinPlugin extends CordovaPlugin {
                     @Override
                     public void adClicked(final AppLovinAd ad) {
                         log("adClicked: Banner Clicked");
+                        bannerView.loadNextAd();
                     }
                 });
 
@@ -303,14 +313,16 @@ public class AppLovinPlugin extends CordovaPlugin {
                     @Override
                     public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) {
                         log("adLeftApplication: Banner left application");
+                        fireAdEvent(EVENT_AD_LEAVEAPP, ADTYPE_BANNER);
                     }
 
                     @Override
                     public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) {
                         log("adFailedToDisplay: Banner failed to display with error code " + code);
+                        fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER);
                     }
                 });
-//                bannerView.loadNextAd();
+
             }
         });
 
@@ -319,6 +331,7 @@ public class AppLovinPlugin extends CordovaPlugin {
 
     private PluginResult removeBanner(final CallbackContext callbackContext) {
         bannerView.pause();
+        bannerView.destroy();
         return null;
     }
 
@@ -329,11 +342,13 @@ public class AppLovinPlugin extends CordovaPlugin {
 
     private PluginResult showBanner(final CallbackContext callbackContext) {
         bannerView.loadNextAd();
+        // TODO add view to mainView, and show
         return null;
     }
 
     private PluginResult showBannerAtXY(final CallbackContext callbackContext) {
-        bannerView.loadNextAd();
+        // TODO update options
+        showBanner(callbackContext);
         return null;
     }
 
@@ -348,17 +363,74 @@ public class AppLovinPlugin extends CordovaPlugin {
         return null;
     }
 
+    private void _prepareInterstitial() {
+        log("_prepareInterstitial");
+        interstitialAds = AppLovinInterstitialAd.create(
+                AppLovinSdk.getInstance( cordova.getActivity().getApplicationContext()),
+                cordova.getActivity().getApplicationContext());
+        log("AppLovinInterstitialAd.create");
+
+        interstitialAds.setAdLoadListener(new AppLovinAdLoadListener() {
+            @Override
+            public void adReceived(AppLovinAd appLovinAd) {
+                log( "Interstitial loaded" );
+                fireAdEvent(EVENT_AD_LOADED, ADTYPE_INTERSTITIAL);
+            }
+
+            @Override
+            public void failedToReceiveAd(int i) {
+                log( "Interstitial failed to load with error code " + i );
+                fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_INTERSTITIAL);
+            }
+        });
+
+        interstitialAds.setAdDisplayListener(new AppLovinAdDisplayListener() {
+            @Override
+            public void adDisplayed(AppLovinAd appLovinAd) {
+                log( "Interstitial Displayed" );
+                fireAdEvent(EVENT_AD_PRESENT, ADTYPE_INTERSTITIAL);
+            }
+
+            @Override
+            public void adHidden(AppLovinAd appLovinAd) {
+                log( "Interstitial Hidden" );
+                fireAdEvent(EVENT_AD_DISMISS, ADTYPE_INTERSTITIAL);
+            }
+        });
+
+        interstitialAds.setAdClickListener(new AppLovinAdClickListener() {
+            @Override
+            public void adClicked(AppLovinAd appLovinAd) {
+                log( "Interstitial Clicked" );
+                fireAdEvent(EVENT_AD_LEAVEAPP, ADTYPE_INTERSTITIAL);
+            }
+        });
+
+
+
+
+
+        interstitialAds.setAdVideoPlaybackListener(new AppLovinAdVideoPlaybackListener() {
+            @Override
+            public void videoPlaybackBegan(AppLovinAd appLovinAd) {
+                log( "Video Started" );
+            }
+
+            @Override
+            public void videoPlaybackEnded(AppLovinAd appLovinAd, double v, boolean b) {
+                log( "Video Ended" );
+            }
+        });
+
+
+    }
+
     private PluginResult showInterstitial(final CallbackContext callbackContext) {
-        final CallbackContext delayCallback = callbackContext;
+
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                boolean result = _showInterstitial();
-                if (result) {
-                    delayCallback.success();
-                } else {
-                    delayCallback.error("Ad is not ready!");
-                }
+                interstitialAds.show();
             }
         });
         return null;
@@ -491,138 +563,32 @@ public class AppLovinPlugin extends CordovaPlugin {
         return null;
     }
 
-    private PluginResult createNativeAd(final CallbackContext callbackContext) {
-        return null;
-    }
+//    private PluginResult createNativeAd(final CallbackContext callbackContext) {
+//        return null;
+//    }
+//
+//    private PluginResult removeNativeAd(final CallbackContext callbackContext) {
+//        return null;
+//    }
+//
+//    private PluginResult setNativeAdClickArea(final CallbackContext callbackContext) {
+//        return null;
+//    }
+//
+//    private PluginResult isInterstitialReady(final CallbackContext callbackContext) {
+//        cordova.getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                boolean result = interstitialAds != null && interstitialAds.isAdReadyToDisplay();
+//                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
+//            }
+//        });
+//
+//        return null;
+//    }
 
-    private PluginResult removeNativeAd(final CallbackContext callbackContext) {
-        return null;
-    }
-
-    private PluginResult setNativeAdClickArea(final CallbackContext callbackContext) {
-        return null;
-    }
-
-    private PluginResult isInterstitialReady(final CallbackContext callbackContext) {
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                boolean result = interstitialAds != null && interstitialAds.isAdReadyToDisplay();
-                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
-            }
-        });
-
-        return null;
-    }
 
 
-    private void _prepareInterstitial() {
-        log("_prepareInterstitial");
-        interstitialAds = AppLovinIncentivizedInterstitial.create(cordova.getActivity().getApplicationContext());
-        log("AppLovinIncentivizedInterstitial.create");
-        interstitialAds.preload(new AppLovinAdLoadListener() {
-            @Override
-            public void adReceived(AppLovinAd ad) {
-                log("adReceived");
-
-                JSONObject data = new JSONObject();
-                try {
-                    data.put("id", ad.getAdIdNumber());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                fireEvent(EVENT_AD_LOADED, data.toString());
-            }
-
-            @Override
-            public void failedToReceiveAd(int errorCode) {
-                log(String.format("failedToReceiveAd: %d", errorCode));
-
-                JSONObject data = new JSONObject();
-                try {
-                    data.put("error", errorCode);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                fireAdEvent("applovin.load_error", data.toString());
-            }
-        });
-    }
-
-    private boolean _showInterstitial() {
-        if (interstitialAds == null || !interstitialAds.isAdReadyToDisplay()) {
-            return false;
-        }
-
-        interstitialAds.show(
-                cordova.getActivity(),
-                new AppLovinAdRewardListener() {
-                    @Override
-                    public void userDeclinedToViewAd(final AppLovinAd appLovinAd) {
-                        log("User declined to view rewarded video");
-                        fireAdEvent("applovin.close", null);
-                    }
-
-                    @Override
-                    public void userRewardVerified(final AppLovinAd ad, final Map map) {
-                        final String currency = (String) map.get("currency");
-                        final String amountStr = (String) map.get("amount");
-                        final int amount = (int) Double.parseDouble(amountStr); // AppLovin returns amount as double
-
-                        log("Verified " + amount + " " + currency);
-
-                        JSONObject data = new JSONObject();
-                        try {
-                            data.put("amount", amount);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        fireEvent("applovin.reward", data.toString());
-                    }
-
-                    @Override
-                    public void userOverQuota(final AppLovinAd appLovinAd, final Map map) {
-                        log("Rewarded video validation request for ad did exceed quota with response: " + map);
-                    }
-
-                    @Override
-                    public void validationRequestFailed(final AppLovinAd appLovinAd, final int errorCode) {
-                        log("Rewarded video validation request for ad failed with error code: " + errorCode);
-                    }
-
-                    @Override
-                    public void userRewardRejected(final AppLovinAd appLovinAd, final Map map) {
-                        log("Rewarded video validation request was rejected with response: " + map);
-                    }
-                },
-                new AppLovinAdVideoPlaybackListener() {
-                    @Override
-                    public void videoPlaybackBegan(AppLovinAd ad) {
-                        log("Rewarded video playback began");
-                    }
-
-                    @Override
-                    public void videoPlaybackEnded(AppLovinAd ad, double percentViewed, boolean fullyWatched) {
-                        if (fullyWatched) {
-                            fireAdEvent("applovin.completed", null);
-                        }
-                    }
-                },
-                new AppLovinAdDisplayListener() {
-                    @Override
-                    public void adDisplayed(AppLovinAd appLovinAd) {
-                        fireAdEvent("applovin.start", null);
-                    }
-
-                    @Override
-                    public void adHidden(AppLovinAd appLovinAd) {
-                        fireAdEvent("applovin.close", null);
-                    }
-                }
-        );
-
-        return true;
-    }
 
     private PluginResult trackEvent(final String event, final JSONArray data, CallbackContext callbackContext) {
         final AppLovinEventService eventService = AppLovinSdk.getInstance(cordova.getActivity()).getEventService();
