@@ -12,8 +12,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import android.app.Activity;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -85,6 +91,22 @@ public class AppLovinPlugin extends CordovaPlugin {
     // options
     protected boolean isTesting = false;
 
+
+    //
+    protected boolean bannerVisible = false;
+    protected boolean autoShowBanner = true;
+    protected boolean logVerbose = false;
+    protected int adWidth = 0;
+    protected int adHeight = 0;
+    protected boolean overlap = false;
+    protected boolean orientationRenew = true;
+    protected int adPosition = 8;
+    protected int posX = 0;
+    protected int posY = 0;
+    protected RelativeLayout overlapLayout = null;
+    protected LinearLayout splitLayout = null;
+    protected ViewGroup parentView = null;
+//    protected View adView = null;
 
     protected void log(final String message) {
 //        if ( adStatusTextView != null )
@@ -217,13 +239,11 @@ public class AppLovinPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray inputs, CallbackContext callbackContext) throws JSONException {
         PluginResult result = null;
-
+        JSONObject options;
 
         if (ACTION_SET_OPTIONS.equals(action)) {
+            options = inputs.optJSONObject(0);
 
-//            String event = inputs.getString(0);
-//            JSONArray parameters = inputs.optJSONArray(1);
-            JSONObject options = inputs.optJSONObject(0);
             result = setOptions(options, callbackContext);
 
         } else if (ACTION_CREATE_BANNER.equals(action)) {
@@ -242,19 +262,21 @@ public class AppLovinPlugin extends CordovaPlugin {
 
 //            String event = inputs.getString(0);
 //            JSONArray parameters = inputs.optJSONArray(1);
-            result = hideBanner(callbackContext);
+            result = hideBanner();
 
         } else if (ACTION_SHOW_BANNER.equals(action)) {
 
 //            String event = inputs.getString(0);
 //            JSONArray parameters = inputs.optJSONArray(1);
-            result = showBanner(callbackContext);
+            int nPos = inputs.optInt(0);
+            result = showBanner(nPos, 0, 0);
 
         } else if (ACTION_SHOW_BANNER_AT_XY.equals(action)) {
 
-            String event = inputs.getString(0);
-            JSONArray parameters = inputs.optJSONArray(1);
-            result = showBannerAtXY(callbackContext);
+            options = inputs.optJSONObject(0);
+            int x = options.optInt("x");
+            int y = options.optInt("y");
+            result = showBannerAtXY(10, x, y, callbackContext);
 
         } else if (ACTION_PREPARE_INTERSTITIAL.equals(action)) {
 
@@ -336,33 +358,33 @@ public class AppLovinPlugin extends CordovaPlugin {
 //                this.logVerbose = options.optBoolean("logVerbose");
 //            }
 //
-//            if (options.has("width")) {
-//                this.adWidth = options.optInt("width");
-//            }
+            if (options.has("width")) {
+                this.adWidth = options.optInt("width");
+            }
 //
-//            if (options.has("height")) {
-//                this.adHeight = options.optInt("height");
-//            }
+            if (options.has("height")) {
+                this.adHeight = options.optInt("height");
+            }
 //
-//            if (options.has("overlap")) {
-//                this.overlap = options.optBoolean("overlap");
-//            }
+            if (options.has("overlap")) {
+                this.overlap = options.optBoolean("overlap");
+            }
 //
 //            if (options.has("orientationRenew")) {
 //                this.orientationRenew = options.optBoolean("orientationRenew");
 //            }
 //
-//            if (options.has("position")) {
-//                this.adPosition = options.optInt("position");
-//            }
+            if (options.has("position")) {
+                this.adPosition = options.optInt("position");
+            }
 //
-//            if (options.has("x")) {
-//                this.posX = options.optInt("x");
-//            }
+            if (options.has("x")) {
+                this.posX = options.optInt("x");
+            }
 //
-//            if (options.has("y")) {
-//                this.posY = options.optInt("y");
-//            }
+            if (options.has("y")) {
+                this.posY = options.optInt("y");
+            }
 //
 //            if (options.has("bannerId")) {
 //                this.bannerId = options.optString("bannerId");
@@ -375,76 +397,101 @@ public class AppLovinPlugin extends CordovaPlugin {
         return null;
     }
 
+    private void createBannerView() {
+        bannerView = new AppLovinAdView(AppLovinAdSize.BANNER, cordova.getActivity());
+
+        //
+        // Optional: Set listeners
+        //
+        bannerView.setAdLoadListener(new AppLovinAdLoadListener() {
+            @Override
+            public void adReceived(final AppLovinAd ad) {
+                log("adReceived: Banner loaded");
+                fireAdEvent(EVENT_AD_LOADED, ADTYPE_BANNER);
+//                        bannerView.loadNextAd();
+            }
+
+            @Override
+            public void failedToReceiveAd(final int errorCode) {
+                // Look at AppLovinErrorCodes.java for list of error codes
+                log("failedToReceiveAd: Banner failed to load with error code " + errorCode + getReasonByCode(errorCode));
+                fireAdErrorEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER, errorCode, getReasonByCode(errorCode));
+            }
+        });
+
+        bannerView.setAdDisplayListener(new AppLovinAdDisplayListener() {
+            @Override
+            public void adDisplayed(final AppLovinAd ad) {
+                log("adDisplayed: Banner Displayed");
+                fireAdEvent(EVENT_AD_PRESENT, ADTYPE_BANNER);
+            }
+
+            @Override
+            public void adHidden(final AppLovinAd ad) {
+
+                log("adHidden: Banner Hidden");
+                fireAdEvent(EVENT_AD_DISMISS, ADTYPE_BANNER);
+            }
+        });
+
+        bannerView.setAdClickListener(new AppLovinAdClickListener() {
+            @Override
+            public void adClicked(final AppLovinAd ad) {
+                log("adClicked: Banner Clicked");
+                bannerView.loadNextAd();
+            }
+        });
+
+        bannerView.setAdViewEventListener(new AppLovinAdViewEventListener() {
+            @Override
+            public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) {
+                log("adOpenedFullscreen: Banner opened fullscreen");
+            }
+
+            @Override
+            public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) {
+                log("adClosedFullscreen: Banner closed fullscreen");
+            }
+
+            @Override
+            public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) {
+                log("adLeftApplication: Banner left application");
+                fireAdEvent(EVENT_AD_LEAVEAPP, ADTYPE_BANNER);
+            }
+
+            @Override
+            public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) {
+                log("adFailedToDisplay: Banner failed to display with error code " + code);
+                fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER);
+            }
+        });
+    }
+
+    private void detachBanner() {
+        if (bannerView != null) {
+            bannerView.setVisibility(View.INVISIBLE);
+            this.bannerVisible = false;
+            ViewGroup parentView = (ViewGroup) this.bannerView.getParent();
+            if (parentView != null) {
+                parentView.removeView(this.bannerView);
+            }
+
+        }
+    }
+
     private PluginResult createBanner(final CallbackContext callbackContext) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                bannerView = new AppLovinAdView(AppLovinAdSize.BANNER, cordova.getActivity());
 
-                //
-                // Optional: Set listeners
-                //
-                bannerView.setAdLoadListener(new AppLovinAdLoadListener() {
-                    @Override
-                    public void adReceived(final AppLovinAd ad) {
-                        log("adReceived: Banner loaded");
-                        fireAdEvent(EVENT_AD_LOADED, ADTYPE_BANNER);
-//                        bannerView.loadNextAd();
-                    }
+                if (bannerView == null) {
+                    createBannerView();
+                    bannerVisible = false;
 
-                    @Override
-                    public void failedToReceiveAd(final int errorCode) {
-                        // Look at AppLovinErrorCodes.java for list of error codes
-                        log("failedToReceiveAd: Banner failed to load with error code " + errorCode + getReasonByCode(errorCode));
-                        fireAdErrorEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER, errorCode, getReasonByCode(errorCode));
-                    }
-                });
+                } else {
+                    detachBanner();
+                }
 
-                bannerView.setAdDisplayListener(new AppLovinAdDisplayListener() {
-                    @Override
-                    public void adDisplayed(final AppLovinAd ad) {
-                        log("adDisplayed: Banner Displayed");
-                        fireAdEvent(EVENT_AD_PRESENT, ADTYPE_BANNER);
-                    }
-
-                    @Override
-                    public void adHidden(final AppLovinAd ad) {
-
-                        log("adHidden: Banner Hidden");
-                        fireAdEvent(EVENT_AD_DISMISS, ADTYPE_BANNER);
-                    }
-                });
-
-                bannerView.setAdClickListener(new AppLovinAdClickListener() {
-                    @Override
-                    public void adClicked(final AppLovinAd ad) {
-                        log("adClicked: Banner Clicked");
-                        bannerView.loadNextAd();
-                    }
-                });
-
-                bannerView.setAdViewEventListener(new AppLovinAdViewEventListener() {
-                    @Override
-                    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) {
-                        log("adOpenedFullscreen: Banner opened fullscreen");
-                    }
-
-                    @Override
-                    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) {
-                        log("adClosedFullscreen: Banner closed fullscreen");
-                    }
-
-                    @Override
-                    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) {
-                        log("adLeftApplication: Banner left application");
-                        fireAdEvent(EVENT_AD_LEAVEAPP, ADTYPE_BANNER);
-                    }
-
-                    @Override
-                    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) {
-                        log("adFailedToDisplay: Banner failed to display with error code " + code );
-                        fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER);
-                    }
-                });
+                bannerView.loadNextAd();
 
             }
         });
@@ -452,26 +499,207 @@ public class AppLovinPlugin extends CordovaPlugin {
         return null;
     }
 
-    private PluginResult removeBanner(final CallbackContext callbackContext) {
-        bannerView.pause();
+
+    private void destroyBannerView(AppLovinAdView bannerView) {
         bannerView.destroy();
+    }
+
+    private PluginResult removeBanner(final CallbackContext callbackContext) {
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if (AppLovinPlugin.this.bannerView != null) {
+                    AppLovinPlugin.this.hideBanner();
+                    AppLovinPlugin.this.destroyBannerView(AppLovinPlugin.this.bannerView);
+                    AppLovinPlugin.this.bannerView = null;
+                }
+
+                AppLovinPlugin.this.bannerVisible = false;
+            }
+        });
+
         return null;
     }
 
-    private PluginResult hideBanner(final CallbackContext callbackContext) {
+
+    private void pauseAdView(AppLovinAdView bannerView) {
         bannerView.pause();
+    }
+
+
+    public Activity getActivity() {
+        return cordova.getActivity();
+    }
+
+    private PluginResult hideBanner() {
+
+        if (bannerView != null) {
+            this.autoShowBanner = false;
+            Activity activity = this.getActivity();
+            activity.runOnUiThread(new Runnable() {
+                public void run() {
+                    AppLovinPlugin.this.detachBanner();
+                    AppLovinPlugin.this.pauseAdView(AppLovinPlugin.this.bannerView);
+                }
+            });
+        }
+
+
         return null;
     }
 
-    private PluginResult showBanner(final CallbackContext callbackContext) {
-        bannerView.loadNextAd();
+
+    public View getView() {
+//        if(adapter != null) return adapter.getView();
+//        else {
+        // Cordova 3.x, class CordovaWebView extends WebView, -> AbsoluteLayout -> ViewGroup -> View -> Object
+        if (View.class.isAssignableFrom(CordovaWebView.class)) {
+            return (View) webView;
+        }
+
+        // Cordova 4.0.0-dev, interface CordovaWebView { View getView(); }
+        try {
+            Method getViewMethod = CordovaWebView.class.getMethod("getView", (Class<?>[]) null);
+            if (getViewMethod != null) {
+                Object[] args = {};
+                return (View) getViewMethod.invoke(webView, args);
+            }
+        } catch (Exception e) {
+        }
+
+        // or else we return the root view, but this should not happen
+        return getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+//        }
+    }
+
+
+    protected int __getAdViewWidth(AppLovinAdView view) {
+        return view.getWidth();
+
+    }
+
+
+    protected int __getAdViewHeight(AppLovinAdView view) {
+        return view.getHeight();
+
+    }
+
+
+    private PluginResult showBanner(final int argPos, final int argX, final int argY) {
+
         // TODO add view to mainView, and show
+        if (this.bannerView == null) {
+            Log.e("GenericAdPlugin", "banner is null, call createBanner() first.");
+        } else {
+            boolean bannerAlreadyVisible = this.bannerVisible;
+            final Activity activity = this.getActivity();
+            activity.runOnUiThread(new Runnable() {
+                public void run() {
+                    View mainView = AppLovinPlugin.this.getView();
+                    if (mainView == null) {
+                        Log.e("AppLovinPlugin", "Error: could not get main view");
+                    } else {
+                        Log.d("AppLovinPlugin", "webview class: " + mainView.getClass());
+                        if (AppLovinPlugin.this.bannerVisible) {
+                            AppLovinPlugin.this.detachBanner();
+                        }
+
+                        int bw = AppLovinPlugin.this.__getAdViewWidth(AppLovinPlugin.this.bannerView);
+                        int bh = AppLovinPlugin.this.__getAdViewHeight(AppLovinPlugin.this.bannerView);
+                        Log.d("GenericAdPlugin", String.format("show banner: (%d x %d)", bw, bh));
+                        ViewGroup rootView = (ViewGroup) mainView.getRootView();
+                        int rw = rootView.getWidth();
+                        int rh = rootView.getHeight();
+                        Log.w("GenericAdPlugin", "show banner, overlap:" + AppLovinPlugin.this.overlap + ", position: " + argPos);
+                        if (AppLovinPlugin.this.overlap) {
+                            int x = AppLovinPlugin.this.posX;
+                            int y = AppLovinPlugin.this.posY;
+                            int ww = mainView.getWidth();
+                            int wh = mainView.getHeight();
+                            if (argPos >= 1 && argPos <= 9) {
+                                switch ((argPos - 1) % 3) {
+                                    case 0:
+                                        x = 0;
+                                        break;
+                                    case 1:
+                                        x = (ww - bw) / 2;
+                                        break;
+                                    case 2:
+                                        x = ww - bw;
+                                }
+
+                                switch ((argPos - 1) / 3) {
+                                    case 0:
+                                        y = 0;
+                                        break;
+                                    case 1:
+                                        y = (wh - bh) / 2;
+                                        break;
+                                    case 2:
+                                        y = wh - bh;
+                                }
+                            } else if (argPos == 10) {
+                                x = argX;
+                                y = argY;
+                            }
+
+                            int[] offsetRootView = new int[]{0, 0};
+                            int[] offsetWebView = new int[]{0, 0};
+                            rootView.getLocationOnScreen(offsetRootView);
+                            mainView.getLocationOnScreen(offsetWebView);
+                            x += offsetWebView[0] - offsetRootView[0];
+                            y += offsetWebView[1] - offsetRootView[1];
+                            if (AppLovinPlugin.this.overlapLayout == null) {
+                                AppLovinPlugin.this.overlapLayout = new RelativeLayout(activity);
+                                rootView.addView(AppLovinPlugin.this.overlapLayout, new RelativeLayout.LayoutParams(-1, -1));
+                                AppLovinPlugin.this.overlapLayout.bringToFront();
+                            }
+
+                            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(bw, bh);
+                            params.leftMargin = x;
+                            params.topMargin = y;
+                            AppLovinPlugin.this.overlapLayout.addView(AppLovinPlugin.this.bannerView, params);
+                            AppLovinPlugin.this.parentView = AppLovinPlugin.this.overlapLayout;
+                        } else {
+                            AppLovinPlugin.this.parentView = (ViewGroup) mainView.getParent();
+                            if (!(AppLovinPlugin.this.parentView instanceof LinearLayout)) {
+                                AppLovinPlugin.this.parentView.removeView(mainView);
+                                AppLovinPlugin.this.splitLayout = new LinearLayout(AppLovinPlugin.this.getActivity());
+                                AppLovinPlugin.this.splitLayout.setOrientation(LinearLayout.VERTICAL);
+                                AppLovinPlugin.this.splitLayout.setLayoutParams(new android.widget.LinearLayout.LayoutParams(-1, -1, 0.0F));
+                                mainView.setLayoutParams(new android.widget.LinearLayout.LayoutParams(-1, -1, 1.0F));
+                                AppLovinPlugin.this.splitLayout.addView(mainView);
+                                AppLovinPlugin.this.getActivity().setContentView(AppLovinPlugin.this.splitLayout);
+                                AppLovinPlugin.this.parentView = AppLovinPlugin.this.splitLayout;
+                            }
+
+                            if (argPos <= 3) {
+                                AppLovinPlugin.this.parentView.addView(AppLovinPlugin.this.bannerView, 0);
+                            } else {
+                                AppLovinPlugin.this.parentView.addView(AppLovinPlugin.this.bannerView);
+                            }
+                        }
+
+                        AppLovinPlugin.this.parentView.bringToFront();
+                        AppLovinPlugin.this.parentView.requestLayout();
+                        AppLovinPlugin.this.bannerView.setVisibility(View.INVISIBLE);
+                        AppLovinPlugin.this.bannerVisible = true;
+                        AppLovinPlugin.this.resumeBannerView(AppLovinPlugin.this.bannerView);
+                        mainView.requestFocus();
+                    }
+                }
+            });
+        }
         return null;
     }
 
-    private PluginResult showBannerAtXY(final CallbackContext callbackContext) {
+    private void resumeBannerView(AppLovinAdView view) {
+        view.resume();
+    }
+
+
+    private PluginResult showBannerAtXY(final int argPos, final int argX, final int argY, final CallbackContext callbackContext) {
         // TODO update options
-        showBanner(callbackContext);
+        showBanner(argPos, argX, argY);
         return null;
     }
 
@@ -505,7 +733,7 @@ public class AppLovinPlugin extends CordovaPlugin {
                 String reason = getReasonByCode(i);
                 log("Interstitial failed to load with error code " + i + reason);
 
-                fireAdErrorEvent(EVENT_AD_FAILLOAD,  ADTYPE_INTERSTITIAL, i, reason);
+                fireAdErrorEvent(EVENT_AD_FAILLOAD, ADTYPE_INTERSTITIAL, i, reason);
             }
         });
 
@@ -768,7 +996,7 @@ public class AppLovinPlugin extends CordovaPlugin {
         this.fireEvent(event, json);
     }
 
-    protected void fireAdErrorEvent(String event,  String adType, int errCode, String errMsg) {
+    protected void fireAdErrorEvent(String event, String adType, int errCode, String errMsg) {
         String obj = this.__getProductShortName();
         String json = String.format("{'adNetwork':'%s','adType':'%s','adEvent':'%s','error':%d,'reason':'%s'}", obj, adType, event, errCode, errMsg);
         this.fireEvent(event, json);
