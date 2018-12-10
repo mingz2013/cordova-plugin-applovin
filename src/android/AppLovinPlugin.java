@@ -41,6 +41,7 @@ public class AppLovinPlugin extends CordovaPlugin {
     private static final String TAG = "AppLovinPlugin";
 
 
+    // actions
     private static final String ACTION_GET_AD_SETTINGS = "getAdSettings";
     private static final String ACTION_SET_OPTIONS = "setOptions";
     private static final String ACTION_CREATE_BANNER = "createBanner";
@@ -58,12 +59,13 @@ public class AppLovinPlugin extends CordovaPlugin {
     private static final String ACTION_SET_NATIVE_AD_CLICK_AREA = "setNativeAdClickArea";
     private static final String ACTION_TRACK_EVENT = "trackEvent";
 
-
+    // adtype
     private static final String ADTYPE_BANNER = "banner";
     private static final String ADTYPE_INTERSTITIAL = "interstitial";
     private static final String ADTYPE_NATIVE = "native";
     private static final String ADTYPE_REWARDVIDEO = "rewardvideo";
 
+    // event
     private static final String EVENT_AD_LOADED = "onAdLoaded";
     private static final String EVENT_AD_FAILLOAD = "onAdFailLoad";
     private static final String EVENT_AD_PRESENT = "onAdPresent";
@@ -72,10 +74,19 @@ public class AppLovinPlugin extends CordovaPlugin {
     private static final String EVENT_AD_WILLPRESENT = "onAdWillPresent";
     private static final String EVENT_AD_WILLDISMISS = "onAdWillDismiss";
 
+
+    // ads
     private AppLovinInterstitialAdDialog interstitialAds = null;
     private AppLovinIncentivizedInterstitial rewardVideoAds = null;
     //    protected TextView adStatusTextView;
     private AppLovinAdView bannerView = null;
+
+
+
+    // options
+    protected boolean isTesting = false;
+
+
 
     protected void log(final String message) {
 //        if ( adStatusTextView != null )
@@ -249,6 +260,55 @@ public class AppLovinPlugin extends CordovaPlugin {
 
 
     private PluginResult setOptions(JSONObject options, final CallbackContext callbackContext) {
+        if (options != null) {
+//            if (options.has("license")) {
+//                this.validateLicense(options.optString("license"));
+//            }
+
+            if (options.has("isTesting")) {
+                this.isTesting = options.optBoolean("isTesting");
+            }
+
+//            if (options.has("logVerbose")) {
+//                this.logVerbose = options.optBoolean("logVerbose");
+//            }
+//
+//            if (options.has("width")) {
+//                this.adWidth = options.optInt("width");
+//            }
+//
+//            if (options.has("height")) {
+//                this.adHeight = options.optInt("height");
+//            }
+//
+//            if (options.has("overlap")) {
+//                this.overlap = options.optBoolean("overlap");
+//            }
+//
+//            if (options.has("orientationRenew")) {
+//                this.orientationRenew = options.optBoolean("orientationRenew");
+//            }
+//
+//            if (options.has("position")) {
+//                this.adPosition = options.optInt("position");
+//            }
+//
+//            if (options.has("x")) {
+//                this.posX = options.optInt("x");
+//            }
+//
+//            if (options.has("y")) {
+//                this.posY = options.optInt("y");
+//            }
+//
+//            if (options.has("bannerId")) {
+//                this.bannerId = options.optString("bannerId");
+//            }
+//
+//            if (options.has("interstitialId")) {
+//                this.interstialId = options.optString("interstitialId");
+//            }
+        }
         return null;
     }
 
