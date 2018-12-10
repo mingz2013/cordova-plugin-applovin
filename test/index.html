@@ -38,9 +38,11 @@
 </head>
 <body onload="onLoad()" onresize="onResize()">
 <script>
-
+    console.log("script........");
     function onLoad() {
+        console.log("onLoad....");
         if ((/(ipad|iphone|ipod|android)/i.test(navigator.userAgent))) {
+            console.log("add event: deviceready....");
             document.addEventListener('deviceready', initApp, false);
         } else {
             initApp();
@@ -61,12 +63,13 @@
     //            rewardVideo: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_570516513370133",
     //            nativeAd: "VID_HD_16_9_46S_APP_INSTALL#569904683431316_569904960097955"
     //        }
-    };
+    //    };
 
     // select the right Ad Id according to platform
     //    var adid = (/(android)/i.test(navigator.userAgent)) ? ad_units.android : ad_units.ios;
 
     function initApp() {
+        console.log("initApp....");
         if (!AppLovinAds) {
             alert('AppLovin plugin not ready');
             return;
@@ -79,21 +82,21 @@
 
     var nativeId = null;
 
-    function updateClickArea() {
-        if (nativeId != null) {
-            // change the click area
-            var offset = $("#nativead").offset();
-            var y = offset.top - $(window).scrollTop();
-            var x = offset.left - $(window).scrollLeft();
-            var w = $("#nativead").width();
-            var h = $("#nativead").height();
-            if (AppLovinAds) AppLovinAds.setNativeAdClickArea(nativeId, x, y, w, h);
-        }
-    }
+    //    function updateClickArea() {
+    //        if (nativeId != null) {
+    //            // change the click area
+    //            var offset = $("#nativead").offset();
+    //            var y = offset.top - $(window).scrollTop();
+    //            var x = offset.left - $(window).scrollLeft();
+    //            var w = $("#nativead").width();
+    //            var h = $("#nativead").height();
+    //            if (AppLovinAds) AppLovinAds.setNativeAdClickArea(nativeId, x, y, w, h);
+    //        }
+    //    }
 
-    $(window).scroll(function () {
-        updateClickArea();
-    });
+    //    $(window).scroll(function () {
+    //        updateClickArea();
+    //    });
 
     // optional, in case respond to events or handle error
     function registerAdEvents() {
@@ -102,23 +105,23 @@
             alert('error: ' + data.error + ', reason: ' + data.reason);
         });
         document.addEventListener('onAdLoaded', function (data) {
-            if (data.adType == "native") {
-                var adRes = data.adRes;
-                //alert( JSON.stringify(adRes) );
-
-                // show ad
-                nativeId = data.adId;
-                var nativeAdContent = adRes.title + '<br/>'
-                    + adRes.body
-                    + "<br/>rating: " + adRes.rating + ", " + adRes.buttonText + "<br/>"
-                    + adRes.socialContext + "<br/>"
-                    + "<img src='" + adRes.icon.url + "' width='" + adRes.icon.width + "' height='" + adRes.icon.height + "'/><br/>"
-                    //+ "<img src='" + adRes.coverImage.url + "' width='" + adRes.coverImage.width + "' height='" + adRes.coverImage.height + "'/>"
-                ;
-                $('#nativead').html(nativeAdContent);
-
-                updateClickArea();
-            }
+//            if (data.adType == "native") {
+//                var adRes = data.adRes;
+//                //alert( JSON.stringify(adRes) );
+//
+//                // show ad
+//                nativeId = data.adId;
+//                var nativeAdContent = adRes.title + '<br/>'
+//                    + adRes.body
+//                    + "<br/>rating: " + adRes.rating + ", " + adRes.buttonText + "<br/>"
+//                    + adRes.socialContext + "<br/>"
+//                    + "<img src='" + adRes.icon.url + "' width='" + adRes.icon.width + "' height='" + adRes.icon.height + "'/><br/>"
+//                    //+ "<img src='" + adRes.coverImage.url + "' width='" + adRes.coverImage.width + "' height='" + adRes.coverImage.height + "'/>"
+//                ;
+//                $('#nativead').html(nativeAdContent);
+//
+//                updateClickArea();
+//            }
         });
         document.addEventListener('onAdPresent', function (data) {
             console.log('onAdPresent' + data);
@@ -147,7 +150,7 @@
     function createSelectedBanner() {
         var overlap = document.getElementById('overlap').checked;
         AppLovinAds.createBanner({
-            adId: adid.banner,
+//            adId: adid.banner,
             overlap: overlap,
             adSize: getSelectedAdSize(),
             position: getSelectedPosition()
@@ -167,7 +170,7 @@
     function prepareInterstitial() {
         var autoshow = document.getElementById('autoshow').checked;
         if (AppLovinAds) AppLovinAds.prepareInterstitial({
-            adId: adid.interstitial,
+//            adId: adid.interstitial,
             autoShow: autoshow
         });
     }
@@ -176,7 +179,7 @@
         console.log("prepareRewardVideo....");
         var autoshow = document.getElementById('autoshow_rewardVideo').checked;
         if (AppLovinAds) AppLovinAds.prepareRewardVideoAd({
-            adId: adid.rewardVideo,
+//            adId: adid.rewardVideo,
             autoShow: autoshow
         });
     }
@@ -187,14 +190,14 @@
             + window.innerHeight;
     }
 
-    function createNativeAd() {
-        if (AppLovinAds) AppLovinAds.createNativeAd(adid.nativeAd);
-    }
-
-    function removeNativeAd() {
-        $('#nativead').html("<br/>");
-        if (AppLovinAds) AppLovinAds.removeNativeAd(nativeId);
-    }
+    //    function createNativeAd() {
+    //        if (AppLovinAds) AppLovinAds.createNativeAd(adid.nativeAd);
+    //    }
+    //
+    //    function removeNativeAd() {
+    //        $('#nativead').html("<br/>");
+    //        if (AppLovinAds) AppLovinAds.removeNativeAd(nativeId);
+    //    }
 </script>
 <div id="fullpage">
     <p>Demo for AppLovinAds Plugin</p>

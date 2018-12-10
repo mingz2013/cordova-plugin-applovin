@@ -82,10 +82,8 @@ public class AppLovinPlugin extends CordovaPlugin {
     private AppLovinAdView bannerView = null;
 
 
-
     // options
     protected boolean isTesting = false;
-
 
 
     protected void log(final String message) {
@@ -104,6 +102,71 @@ public class AppLovinPlugin extends CordovaPlugin {
 
 
         Log.d(TAG, message);
+
+    }
+
+
+    protected String getReasonByCode(int code) {
+//        SDK_DISABLED
+//                FETCH_AD_TIMEOUT
+//        NO_NETWORK
+//                NO_FILL
+//        UNABLE_TO_RENDER_AD
+//                INVALID_ZONE
+//        INVALID_AD_TOKEN
+//                UNSPECIFIED_ERROR
+//        INCENTIVIZED_NO_AD_PRELOADED
+//                INCENTIVIZED_UNKNOWN_SERVER_ERROR
+//        INCENTIVIZED_SERVER_TIMEOUT
+//                INCENTIVIZED_USER_CLOSED_VIDEO
+//        INVALID_RESPONSE
+//                INVALID_URL
+//        UNABLE_TO_PREPARE_NATIVE_AD
+//                NATIVE_AD_IMPRESSION_ALREADY_TRACKED
+//        UNABLE_TO_PRECACHE_RESOURCES
+//                UNABLE_TO_PRECACHE_IMAGE_RESOURCES
+//        UNABLE_TO_PRECACHE_VIDEO_RESOURCES
+
+        switch (code) {
+            case AppLovinErrorCodes.SDK_DISABLED:
+                return "SDK DISABLED";
+            case AppLovinErrorCodes.FETCH_AD_TIMEOUT:
+                return "FETCH_AD_TIMEOUT";
+            case AppLovinErrorCodes.NO_NETWORK:
+                return "NO_NETWORK";
+            case AppLovinErrorCodes.NO_FILL:
+                return "NO_FILL";
+            case AppLovinErrorCodes.UNABLE_TO_RENDER_AD:
+                return "UNABLE_TO_RENDER_AD";
+            case AppLovinErrorCodes.INVALID_AD_TOKEN:
+                return "INVALID_AD_TOKEN";
+            case AppLovinErrorCodes.UNSPECIFIED_ERROR:
+                return "UNSPECIFIED_ERROR";
+            case AppLovinErrorCodes.INCENTIVIZED_NO_AD_PRELOADED:
+                return "INCENTIVIZED_NO_AD_PRELOADED";
+            case AppLovinErrorCodes.INCENTIVIZED_UNKNOWN_SERVER_ERROR:
+                return "INCENTIVIZED_UNKNOWN_SERVER_ERROR";
+            case AppLovinErrorCodes.INCENTIVIZED_SERVER_TIMEOUT:
+                return "INCENTIVIZED_SERVER_TIMEOUT";
+            case AppLovinErrorCodes.INCENTIVIZED_USER_CLOSED_VIDEO:
+                return "INCENTIVIZED_USER_CLOSED_VIDEO";
+            case AppLovinErrorCodes.INVALID_RESPONSE:
+                return "INVALID_RESPONSE";
+            case AppLovinErrorCodes.INVALID_URL:
+                return "INVALID_URL";
+            case AppLovinErrorCodes.UNABLE_TO_PREPARE_NATIVE_AD:
+                return "UNABLE_TO_PREPARE_NATIVE_AD";
+            case AppLovinErrorCodes.NATIVE_AD_IMPRESSION_ALREADY_TRACKED:
+                return "NATIVE_AD_IMPRESSION_ALREADY_TRACKED";
+            case AppLovinErrorCodes.UNABLE_TO_PRECACHE_RESOURCES:
+                return "UNABLE_TO_PRECACHE_RESOURCES";
+            case AppLovinErrorCodes.UNABLE_TO_PRECACHE_IMAGE_RESOURCES:
+                return "UNABLE_TO_PRECACHE_IMAGE_RESOURCES";
+            case AppLovinErrorCodes.UNABLE_TO_PRECACHE_VIDEO_RESOURCES:
+                return "UNABLE_TO_PRECACHE_VIDEO_RESOURCES";
+            default:
+                return "unexcept";
+        }
 
     }
 
@@ -331,8 +394,8 @@ public class AppLovinPlugin extends CordovaPlugin {
                     @Override
                     public void failedToReceiveAd(final int errorCode) {
                         // Look at AppLovinErrorCodes.java for list of error codes
-                        log("failedToReceiveAd: Banner failed to load with error code " + errorCode);
-                        fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER);
+                        log("failedToReceiveAd: Banner failed to load with error code " + errorCode + getReasonByCode(errorCode));
+                        fireAdErrorEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER, errorCode, getReasonByCode(errorCode));
                     }
                 });
 
@@ -378,7 +441,7 @@ public class AppLovinPlugin extends CordovaPlugin {
 
                     @Override
                     public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) {
-                        log("adFailedToDisplay: Banner failed to display with error code " + code);
+                        log("adFailedToDisplay: Banner failed to display with error code " + code );
                         fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_BANNER);
                     }
                 });
@@ -426,34 +489,36 @@ public class AppLovinPlugin extends CordovaPlugin {
     private void _prepareInterstitial() {
         log("_prepareInterstitial");
         interstitialAds = AppLovinInterstitialAd.create(
-                AppLovinSdk.getInstance( cordova.getActivity().getApplicationContext()),
+                AppLovinSdk.getInstance(cordova.getActivity().getApplicationContext()),
                 cordova.getActivity().getApplicationContext());
         log("AppLovinInterstitialAd.create");
 
         interstitialAds.setAdLoadListener(new AppLovinAdLoadListener() {
             @Override
             public void adReceived(AppLovinAd appLovinAd) {
-                log( "Interstitial loaded" );
+                log("Interstitial loaded");
                 fireAdEvent(EVENT_AD_LOADED, ADTYPE_INTERSTITIAL);
             }
 
             @Override
             public void failedToReceiveAd(int i) {
-                log( "Interstitial failed to load with error code " + i );
-                fireAdEvent(EVENT_AD_FAILLOAD, ADTYPE_INTERSTITIAL);
+                String reason = getReasonByCode(i);
+                log("Interstitial failed to load with error code " + i + reason);
+
+                fireAdErrorEvent(EVENT_AD_FAILLOAD,  ADTYPE_INTERSTITIAL, i, reason);
             }
         });
 
         interstitialAds.setAdDisplayListener(new AppLovinAdDisplayListener() {
             @Override
             public void adDisplayed(AppLovinAd appLovinAd) {
-                log( "Interstitial Displayed" );
+                log("Interstitial Displayed");
                 fireAdEvent(EVENT_AD_PRESENT, ADTYPE_INTERSTITIAL);
             }
 
             @Override
             public void adHidden(AppLovinAd appLovinAd) {
-                log( "Interstitial Hidden" );
+                log("Interstitial Hidden");
                 fireAdEvent(EVENT_AD_DISMISS, ADTYPE_INTERSTITIAL);
             }
         });
@@ -461,24 +526,21 @@ public class AppLovinPlugin extends CordovaPlugin {
         interstitialAds.setAdClickListener(new AppLovinAdClickListener() {
             @Override
             public void adClicked(AppLovinAd appLovinAd) {
-                log( "Interstitial Clicked" );
+                log("Interstitial Clicked");
                 fireAdEvent(EVENT_AD_LEAVEAPP, ADTYPE_INTERSTITIAL);
             }
         });
 
 
-
-
-
         interstitialAds.setAdVideoPlaybackListener(new AppLovinAdVideoPlaybackListener() {
             @Override
             public void videoPlaybackBegan(AppLovinAd appLovinAd) {
-                log( "Video Started" );
+                log("Video Started");
             }
 
             @Override
             public void videoPlaybackEnded(AppLovinAd appLovinAd, double v, boolean b) {
-                log( "Video Ended" );
+                log("Video Ended");
             }
         });
 
@@ -505,11 +567,13 @@ public class AppLovinPlugin extends CordovaPlugin {
             public void adReceived(AppLovinAd appLovinAd) {
                 log("adReceived: Rewarded video loaded.");
 //                showButton.setEnabled( true );
+                fireAdEvent(EVENT_AD_LOADED, ADTYPE_REWARDVIDEO);
             }
 
             @Override
             public void failedToReceiveAd(int errorCode) {
-                log("failedToReceiveAd: Rewarded video failed to load with error code " + errorCode);
+                log("failedToReceiveAd: Rewarded video failed to load with error code " + errorCode + getReasonByCode(errorCode));
+                fireAdErrorEvent(EVENT_AD_FAILLOAD, ADTYPE_REWARDVIDEO, errorCode, getReasonByCode(errorCode));
             }
         });
         return null;
@@ -573,7 +637,8 @@ public class AppLovinPlugin extends CordovaPlugin {
                     // Note: This code is only possible when working with rewarded videos.
                 }
 
-                log("validationRequestFailed: Reward validation request failed with error code: " + responseCode);
+                log("validationRequestFailed: Reward validation request failed with error code: " + responseCode + getReasonByCode(responseCode));
+                fireAdErrorEvent(EVENT_AD_FAILLOAD, ADTYPE_REWARDVIDEO, responseCode, getReasonByCode(responseCode));
             }
 
             @Override
@@ -602,12 +667,16 @@ public class AppLovinPlugin extends CordovaPlugin {
         AppLovinAdDisplayListener adDisplayListener = new AppLovinAdDisplayListener() {
             @Override
             public void adDisplayed(AppLovinAd appLovinAd) {
+
                 log("adDisplayed: Ad Displayed");
+                fireAdEvent(EVENT_AD_PRESENT, ADTYPE_REWARDVIDEO);
             }
 
             @Override
             public void adHidden(AppLovinAd appLovinAd) {
                 log("adHidden: Ad Dismissed");
+                fireAdEvent(EVENT_AD_DISMISS, ADTYPE_REWARDVIDEO);
+
             }
         };
 
@@ -616,6 +685,7 @@ public class AppLovinPlugin extends CordovaPlugin {
             @Override
             public void adClicked(AppLovinAd appLovinAd) {
                 log("Ad Click");
+                fireAdEvent(EVENT_AD_LEAVEAPP, ADTYPE_REWARDVIDEO);
             }
         };
 
@@ -646,8 +716,6 @@ public class AppLovinPlugin extends CordovaPlugin {
 //
 //        return null;
 //    }
-
-
 
 
     private PluginResult trackEvent(final String event, final JSONArray data, CallbackContext callbackContext) {
@@ -690,14 +758,19 @@ public class AppLovinPlugin extends CordovaPlugin {
     }
 
 
-
     protected String __getProductShortName() {
-        return "AppLoginPlugin";
+        return "AppLovinAds";
     }
 
     protected void fireAdEvent(String event, String adType) {
         String obj = this.__getProductShortName();
         String json = String.format("{'adNetwork':'%s','adType':'%s','adEvent':'%s'}", obj, adType, event);
+        this.fireEvent(event, json);
+    }
+
+    protected void fireAdErrorEvent(String event,  String adType, int errCode, String errMsg) {
+        String obj = this.__getProductShortName();
+        String json = String.format("{'adNetwork':'%s','adType':'%s','adEvent':'%s','error':%d,'reason':'%s'}", obj, adType, event, errCode, errMsg);
         this.fireEvent(event, json);
     }
 
