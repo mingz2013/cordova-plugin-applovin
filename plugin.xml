@@ -70,7 +70,7 @@
         <source-file src="src/ios/AppLovinPlugin.m"/>
 
 
-        <framework src="AppLovinSDK" type="podspec"/>
+        <framework src="AppLovinSDK" type="podspec" spec="~> ~> 6.1.4"/>
         <!--<framework src="AppLovinSDK.framework" custom="true" />-->
     </platform>
 
